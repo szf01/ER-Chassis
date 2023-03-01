@@ -3,6 +3,7 @@
  * @author TITH (1023515576@qq.com)
  * @brief 底盘控制
  * @version 0.1
+ * 
  * @date 2022-07-09
  *
  * @copyright Copyright (c) 2022
@@ -22,12 +23,13 @@
 #include "Caculate.h"
 #include "usercalculate.h"
 #include "wtr_uart.h"
+#include "usercallback.h"
 
 #define rx_DEADBAND 100.0
 
-uni_wheel_t wheels[4];
+uni_wheel_t wheels[3];
 
-double HallCorrectingStartPos[4];
+double HallCorrectingStartPos[3];
 uint32_t HallCorrectingStartTick;
 
 enum {
@@ -129,7 +131,7 @@ void ChassisTask(void const *argument)
         /* 速度切换 */
         if (ctrl_data->buttons & (1 << 7)) {
             if (SpeedRatio.last_tick + SpeedRatio.button_min_time < HAL_GetTick()) {
-                SpeedRatio.last_tick = HAL_GetTick();
+                SpeedRatio.last_tick = HAL_GetTick(); // 按键防抖
                 if (SpeedRatio.id == 0) {
                     SpeedRatio.id = 1;
                     Beep();
@@ -141,12 +143,14 @@ void ChassisTask(void const *argument)
             }
         }
 
-        DeadBand(ctrl_data->left_x, ctrl_data->left_y, &lx, &ly, 100);
+        // 左摇杆控制
+        DeadBand(ctrl_data->left_x, ctrl_data->left_y, &lx, &ly, 100); // 摇杆死区
         rx = ctrl_data->right_x;
 
         vx = lx * SpeedRatio.ratio[SpeedRatio.id];
-        vy = ly * SpeedRatio.ratio[SpeedRatio.id];
+        vy = ly * SpeedRatio.ratio[SpeedRatio.id]; // 将左摇杆数据转换为底盘速度
 
+        // 右摇杆控制
         if (fabs(rx) <= rx_DEADBAND) {
             vrow = 0;
         } else {
@@ -156,6 +160,8 @@ void ChassisTask(void const *argument)
                 vrow = (rx + rx_DEADBAND) * spin_ratio;
             }
         }
+
+        // 按键控制
         if ((ctrl_data->buttons & (1 << 0)) && (RunningState == Normal)) {
             RunningState = HallCorrecting;
             for (int i = 0; i < 3; i++) {
@@ -181,34 +187,36 @@ void ChassisTask(void const *argument)
                 pid_pos_y_pos.target   = control.y_set;
                 pid_pos_y_pos.feedback = mav_posture.pos_y;
 
-                Chassis_SetSpeed(wheels, 3, Direction_Translate(&control,&mav_posture).vx_set + PID_Position(&pid_pos_x_pos),
-                                 Direction_Translate(&control,&mav_posture).vy_set + PID_Position(&pid_pos_y_pos),
+                Chassis_SetSpeed(wheels, 3, Direction_Translate(&control, &mav_posture).vx_set + PID_Position(&pid_pos_x_pos),
+                                 Direction_Translate(&control, &mav_posture).vy_set + PID_Position(&pid_pos_y_pos),
                                  control.vw_set + PID_Position(&pid_pos_w_pos));
                 break;
             default:
                 break;
         }
 
+        // static int n_ = 0;
+        // if (n_++ > 1000) {
+        //     n_ = 0;
+        // HAL_GPIO_TogglePin(GPIOF, GPIO_PIN_14); // A板上的绿灯
+        // }
         osDelayUntil(&PreviousWakeTime, 2);
     }
 }
 
 void ChassisTestTask(void const *argument)
 {
-    for(;;) 
-    {
-/*         UD_printf("speed:");
-        for (int i = 0; i < 4; i++) {
-            UD_printf("%6.2lf ", wheels[i].exp_speed);
+    Chassis_Init(wheels);
+    osDelay(200);
+    uint32_t PreviousWakeTime = osKernelSysTick();
+    HallCorrectingStartTick = HAL_GetTick();
+    for (;;) {
+        // Chassis_SetSpeed(wheels, 3, 0, 0, 1);
+        for (int i = 0; i < 3; i++) {
+            HallCorrectingStartPos[i] = wheels[i].now_rot_pos;
         }
-
-        UD_printf("rot_pos:");
-        for (int i = 0; i < 4; i++) {
-            UD_printf("%6.2lf ", wheels[i].exp_rot_pos);
-        }
-        UD_printf("\n"); */
-        Chassis_SetSpeed(wheels, 3, 0.1, 0.1, 0);
-        osDelay(200);
+        Chassis_HallCorrecting(wheels, 3, HallCorrectingStartTick);
+        osDelayUntil(&PreviousWakeTime, 2);
     }
 }
 

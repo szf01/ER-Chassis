@@ -146,7 +146,7 @@ BaseType_t F_reboot(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcC
 // }
 
 #include "chassis_driver.h"
-extern uni_wheel_t wheels[4];
+extern uni_wheel_t wheels[3];
 BaseType_t F_wheel_offset(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) 
 {
 	BaseType_t xParameterStringLength;

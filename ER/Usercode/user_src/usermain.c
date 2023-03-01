@@ -67,6 +67,8 @@ void StartDefaultTask(void const *argument)
     hDJI[3].motorType = M3508;
     hDJI[4].motorType = M2006;
 	hDJI[5].motorType = M2006;
+    hDJI[6].motorType = M2006;
+    DJI_Init();// 大疆电机初始化
     wtrMavlink_BindChannel(&huart8, MAVLINK_COMM_0);// MAVLINK初始化
     CtrlDataSender_Init(&huart2, MAVLINK_COMM_1); // 遥控器初始化
 

@@ -65,14 +65,14 @@ void wtrMavlink_MsgRxCpltCallback(mavlink_message_t *msg)
             break;
     }
 }
-
+int test_count = 0;
 /**
- * @description:外部中断回调函数 用来计算编码器圈数
+ * @description:外部中断回调函数
  * @author: szf
  * @date:
  * @return {void}
  */
-extern uni_wheel_t wheels[4];
+extern uni_wheel_t wheels[3];
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     switch (GPIO_Pin)
@@ -84,13 +84,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		Wheel_Hall_Callback(GPIOE, GPIO_Pin, &wheels[1]);
 		// UWheels_Hall_Callback(1);
 		break;
-	case GPIO_PIN_11:
-		Wheel_Hall_Callback(GPIOE, GPIO_Pin, &wheels[2]);
+	case GPIO_PIN_0:
+		Wheel_Hall_Callback(GPIOC, GPIO_Pin, &wheels[2]);
+        test_count++;
 		// UWheels_Hall_Callback(2);
-		break;
-	case GPIO_PIN_12:
-		Wheel_Hall_Callback(GPIOE, GPIO_Pin, &wheels[3]);
-		// UWheels_Hall_Callback(3);
 		break;
 	default:
         counter++;

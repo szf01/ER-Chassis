@@ -1,12 +1,3 @@
-/*
- * @Author: szf
- * @Date: 2023-02-22 11:59:40
- * @LastEditTime: 2023-02-22 11:59:57
- * @LastEditors: szf
- * @Description: 
- * @FilePath: \ER\Usercode\user_src\ADS1256.c
- * @WeChat:szf13373959031
- */
 /**
  * @file ADS1256.c
  * @author TITH (1023515576@qq.com)

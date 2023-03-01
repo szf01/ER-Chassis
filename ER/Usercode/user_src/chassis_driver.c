@@ -125,7 +125,7 @@ void Wheel_Hall_Callback(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uni_wheel_t *wh
             Wheel_ReadNowRotPos(wheel);
         }
     }
-}
+}// 上升沿 下降沿 均要触发中断
 
 void Wheels_CANTransmit(uni_wheel_t wheel[])
 {
@@ -173,11 +173,11 @@ void Chassis_Init(uni_wheel_t *wheel)
     wheel[2].hDJI = &hDJI[6];
 
     wheel[0].hvesc.hcann         = &hcan1;
-    wheel[0].hvesc.controller_id = 0x19;
+    wheel[0].hvesc.controller_id = 0x03;
     wheel[1].hvesc.hcann         = &hcan1;
-    wheel[1].hvesc.controller_id = 0x1a;
+    wheel[1].hvesc.controller_id = 0x02;
     wheel[2].hvesc.hcann         = &hcan1;
-    wheel[2].hvesc.controller_id = 0x1b;
+    wheel[2].hvesc.controller_id = 0x00;
 
     wheel[0].hall_angle = 225.0 / 180 * M_PI;
     wheel[1].hall_angle = 225.0 / 180 * M_PI;
@@ -186,7 +186,8 @@ void Chassis_Init(uni_wheel_t *wheel)
     for (int i = 0; i < 3; i++) {
         wheel[i].rot_pos_ratio  = 191;
         wheel[i].speed_ratio    = 2938;
-        wheel[i].rot_pos_offset = -M_PI / 2;
+        wheel[i].rot_pos_offset = 0;
+        // wheel[i].rot_pos_offset = -M_PI/2;
     }
 }
 
