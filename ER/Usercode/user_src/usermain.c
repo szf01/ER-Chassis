@@ -73,10 +73,10 @@ void StartDefaultTask(void const *argument)
     CtrlDataSender_Init(&huart2, MAVLINK_COMM_1); // 遥控器初始化
 
     //开启线程
-    OwChassisTaskStart(&ControllerData);// 全向轮底盘控制线程
-    PerceptionTaskStart(&ControllerData);  // 底盘感知定位线程
+    // OwChassisTaskStart(&ControllerData);// 全向轮底盘控制线程
+    // PerceptionTaskStart(&ControllerData);  // 底盘感知定位线程
     ChassisTaskStart(&ControllerData); //舵轮底盘控制线程
-	CtrlDataSender_Start(&ControllerData);// 遥控器线程
+	// CtrlDataSender_Start(&ControllerData);// 遥控器线程
 
     for (;;) {
         osDelay(1);

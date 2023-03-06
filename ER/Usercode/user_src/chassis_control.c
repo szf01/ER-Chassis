@@ -209,13 +209,14 @@ void ChassisTestTask(void const *argument)
     Chassis_Init(wheels);
     osDelay(200);
     uint32_t PreviousWakeTime = osKernelSysTick();
-    HallCorrectingStartTick = HAL_GetTick();
+    // HallCorrectingStartTick = HAL_GetTick();
     for (;;) {
-        // Chassis_SetSpeed(wheels, 3, 0, 0, 1);
-        for (int i = 0; i < 3; i++) {
-            HallCorrectingStartPos[i] = wheels[i].now_rot_pos;
-        }
-        Chassis_HallCorrecting(wheels, 3, HallCorrectingStartTick);
+        Chassis_SetSpeed(wheels, 3, 1, 1, 0);
+
+        // for (int i = 0; i < 3; i++) {
+        //     HallCorrectingStartPos[i] = wheels[i].now_rot_pos;
+        // }
+        // Chassis_HallCorrecting(wheels, 3, HallCorrectingStartTick);
         osDelayUntil(&PreviousWakeTime, 2);
     }
 }

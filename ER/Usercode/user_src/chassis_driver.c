@@ -168,9 +168,9 @@ void Chassis_Init(uni_wheel_t *wheel)
     }
 
     Chassis_SetOrigin(wheel, 0, 0);
-    wheel[0].hDJI = &hDJI[4];
-    wheel[1].hDJI = &hDJI[5];
-    wheel[2].hDJI = &hDJI[6];
+    wheel[0].hDJI = &hDJI[6];
+    wheel[1].hDJI = &hDJI[4];
+    wheel[2].hDJI = &hDJI[5];
 
     wheel[0].hvesc.hcann         = &hcan1;
     wheel[0].hvesc.controller_id = 0x03;
